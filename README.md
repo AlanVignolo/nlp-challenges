@@ -1,27 +1,32 @@
-# Procesamiento de Lenguaje Natural I — CEIA, FIUBA
+# Natural Language Processing I — CEIA, FIUBA
 
-Cuatro desafíos de la materia Procesamiento de Lenguaje Natural I, de la Especialización en Inteligencia Artificial (FIUBA), cursada 2026. Trabajo individual.
+Four challenges from the Natural Language Processing I course, part of the AI Specialization (FIUBA), 2026 cohort. Individual work.
 
-## Desafío 1 — TF-IDF y Naïve Bayes
+## Challenge 1 — TF-IDF and Naive Bayes
 
-Vectorización de 20 Newsgroups con TF-IDF, similaridad coseno entre documentos y entre palabras (transponiendo la matriz documento-término), y clasificación con Naïve Bayes. Un clasificador por prototipos (1-NN sobre similaridad) da F1-macro 0.5050. Barriendo vectorizador, hiperparámetros y modelo, el mejor resultado es TF-IDF + ComplementNB con F1-macro 0.6999, contra 0.5854 del baseline.
+TF-IDF vectorization of 20 Newsgroups, cosine similarity between documents and between words (by transposing the document-term matrix), and Naive Bayes classification. A prototype classifier (1-NN over similarity) gets F1-macro 0.5050. Sweeping vectorizer, hyperparameters and model, the best result is TF-IDF + ComplementNB with F1-macro 0.6999, against 0.5854 for the baseline.
 
-## Desafío 2 — Embeddings propios con Word2Vec
+## Challenge 2 — Custom embeddings with Word2Vec
 
-Word2Vec (Gensim, skip-gram) entrenado sobre un corpus propio: tres obras del siglo XIX argentino (*Facundo*, *Una excursión a los indios ranqueles*, *Martín Fierro*), en vez del corpus de letras de canciones de la consigna original. Se inspeccionan vecinos semánticos de términos de interés y se proyectan los embeddings a 2D con t-SNE para identificar clusters (político, rural, numerales, plurales gramaticales).
+Word2Vec (Gensim, skip-gram) trained on a custom corpus: three 19th-century Argentine works (*Facundo*, *Una excursión a los indios ranqueles*, *Martín Fierro*), instead of the song lyrics corpus from the original assignment. Semantic neighbors of terms of interest are inspected, and the embeddings are projected to 2D with t-SNE to find clusters:
 
-## Desafío 3 — Modelo de lenguaje a nivel de caracteres
+- Political/civilization vocabulary — `foto_1.png`
+- Numbers and time units — `foto_2.png`
+- Rural/gaucho vocabulary — `foto_3.png`
+- Feminine plurals (a grammatical, not semantic, cluster) — `foto_4.png`
 
-Modelo de lenguaje por caracteres sobre el mismo corpus del desafío 2, evaluado con perplejidad en validación. Compara SimpleRNN (200 unidades) contra LSTM (100 unidades) con cantidad de parámetros similar: perplejidad mínima 7.04 y 7.17 respectivamente. Incluye generación de texto con greedy search y beam search (determinista y estocástico, con distintas temperaturas).
+## Challenge 3 — Character-level language model
 
-## Desafío 4 — Traductor inglés→español seq2seq
+Character-level language model on the same corpus as challenge 2, evaluated with validation perplexity. Compares SimpleRNN (200 units) against LSTM (100 units) with a similar parameter count: minimum perplexity 7.04 and 7.17 respectively. Includes text generation with greedy search and beam search (deterministic and stochastic, at different temperatures).
 
-Encoder-decoder LSTM con atención nula (seq2seq clásico), encoder inicializado con embeddings GloVe preentrenados. Se entrenan y comparan tres configuraciones de 64, 128 y 256 unidades. La de 256 da el mejor val_loss (0.5342) aunque la mejora sobre 128 (0.6044) es marginal frente al costo de entrenamiento.
+## Challenge 4 — English→Spanish seq2seq translator
 
-Decisión deliberada sobre el largo de las secuencias: el percentil 95 de longitud rondaba los 11-12 tokens, pero se optó por truncar en 35 (input) y 40 (output) en vez de en el percentil 95, para no descartar las oraciones largas — son las que exigen generalización real al modelo, aunque impliquen mucho padding en las oraciones cortas.
+LSTM encoder-decoder (plain seq2seq, no attention), with the encoder initialized from pretrained GloVe embeddings. Three configurations of 64, 128 and 256 units are trained and compared. 256 units gives the best val_loss (0.5342), though the improvement over 128 (0.6044) is marginal against the extra training cost.
 
-## Cómo correrlos
+Deliberate choice on sequence length: the 95th percentile of length was only around 11-12 tokens, but sequences were truncated at 35 (input) and 40 (output) instead of at that percentile, to keep the long sentences — they are the ones that actually test generalization, even at the cost of heavy padding on short sentences.
 
-Los datasets, los pesos entrenados (`.keras`) y los outputs (embeddings, historiales de perplejidad) no están versionados en este repo — quedan afuera por peso y porque se regeneran corriendo el notebook. Cada notebook descarga o genera lo que necesita en sus primeras celdas: 20 Newsgroups vía scikit-learn, el corpus de literatura argentina (`corpus_ar/`) hay que agregarlo a mano si no está, y el par de oraciones inglés-español se descarga solo.
+## How to run them
 
-El desafío 3 espera encontrar `my_model.keras` (y el desafío 4 entrena los suyos desde cero) para no reentrenar; si no existen, hay que poner `RETRAIN` / `RETRAIN_LSTM` en `True` para generarlos. El desafío 4 depende además de un archivo de embeddings GloVe (`gloveembedding.pkl`) que descarga de Google Drive en tiempo de ejecución.
+Datasets, trained weights (`.keras`) and outputs (embeddings, perplexity histories) are not versioned in this repo — left out for size, and because they're regenerated by running the notebook. Each notebook downloads or generates what it needs in its first cells: 20 Newsgroups via scikit-learn, the Argentine literature corpus (`corpus_ar/`) needs to be added by hand if missing, and the English-Spanish sentence pairs download on their own.
+
+Challenge 3 expects to find `my_model.keras` (challenge 4 trains its own from scratch) to skip retraining; if it's missing, set `RETRAIN` / `RETRAIN_LSTM` to `True` to generate it. Challenge 4 also depends on a GloVe embeddings file (`gloveembedding.pkl`) fetched from Google Drive at runtime — that link will eventually die, same as any demo hosted on a free tier.
