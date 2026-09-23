@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Datasets, pesos de modelos y outputs de entrenamiento (se regeneran con los notebooks)
+songs_dataset.zip
+songs_dataset/
+corpus_ar/
+*.keras
+vectors.tsv
+labels.tsv
+history_ppl*.pkl
+char2idx.pkl
+gloveembedding.pkl
+spa-eng/
+spa-eng.zip
